@@ -1,5 +1,5 @@
-﻿
-using System;
+﻿using System;
+using System.Threading;
 
 public class Program
 {
@@ -14,12 +14,15 @@ public class Program
 
         while (true)
         {
-            input.Update();
-
             DateTime frameStartTime = DateTime.Now;
             float deltaTime = (float)(frameStartTime - lastFrameTime).TotalSeconds;
-            gameLogic.Update(deltaTime);
+
+            input.Update(); // Обработка ввода от пользователя
+            gameLogic.Update(deltaTime); // Обновление состояния игры
+
             lastFrameTime = frameStartTime;
+
+            Thread.Sleep(10); // Ждем немного перед следующим циклом
         }
     }
 }

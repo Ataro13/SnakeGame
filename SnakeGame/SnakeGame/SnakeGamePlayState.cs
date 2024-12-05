@@ -1,6 +1,4 @@
-﻿
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 
 public class SnakeGameplayState : BaseGameState
@@ -15,13 +13,15 @@ public class SnakeGameplayState : BaseGameState
 
     private List<Cell> Body = new List<Cell>();
     private SnakeDir currentDir = SnakeDir.Right;
-    private float timeToMove = 0.2f;
+    private float timeSinceLastMove = 0f;
+    private const float moveInterval = 0.2f; // Интервал времени для перемещения (200 мс)
 
     public override void Reset()
     {
         Body.Clear();
-        currentDir = SnakeDir.Right; // Устанавливаем начальное направление вправо
-        Body.Add(new Cell(0, 0)); // Начальные координаты головы змейки
+        currentDir = SnakeDir.Right;
+        Body.Add(new Cell(0, 0));
+        timeSinceLastMove = 0f;
     }
 
     public void SetDirection(SnakeDir direction)
@@ -34,25 +34,36 @@ public class SnakeGameplayState : BaseGameState
         Cell nextCell = head;
         switch (currentDir)
         {
-            case SnakeDir.Up: nextCell.Y -= 1; break;
-            case SnakeDir.Down: nextCell.Y += 1; break;
-            case SnakeDir.Left: nextCell.X -= 1; break;
-            case SnakeDir.Right: nextCell.X += 1; break;
+            case SnakeDir.Up:
+                nextCell.Y -= 1;
+                break;
+            case SnakeDir.Down:
+                nextCell.Y += 1;
+                break;
+            case SnakeDir.Left:
+                nextCell.X -= 1;
+                break;
+            case SnakeDir.Right:
+                nextCell.X += 1;
+                break;
         }
         return nextCell;
     }
 
     public override void Update(float deltaTime)
     {
-        timeToMove -= deltaTime;
-        if (timeToMove > 0) return;
+        timeSinceLastMove += deltaTime;
 
-        timeToMove = 0.2f; // Обновление каждые 200 мс
-        Cell head = Body[0];
-        Cell nextCell = ShiftTo(head);
-        Body.RemoveAt(Body.Count - 1);
-        Body.Insert(0, nextCell);
+        // Обновляем положение, когда прошло нужное кол-во времени
+        if (timeSinceLastMove >= moveInterval)
+        {
+            timeSinceLastMove = 0f;
+            Cell head = Body[0];
+            Cell nextCell = ShiftTo(head);
+            Body.RemoveAt(Body.Count - 1);
+            Body.Insert(0, nextCell);
 
-        Console.WriteLine($"Head Position: X = {Body[0].X}, Y = {Body[0].Y}");
+            Console.WriteLine($"Head Position: X = {Body[0].X}, Y = {Body[0].Y}");
+        }
     }
 }
