@@ -1,11 +1,21 @@
-﻿using System;
+﻿
+using System;
 using System.Threading;
+using SnakeGame;
 
-public class Program
+class Program
 {
     public static void Main()
     {
-        SnakeGameLogic gameLogic = new SnakeGameLogic();
+        ConsoleColor[] colors = { ConsoleColor.Gray, ConsoleColor.Green };
+        ConsoleRenderer renderer = new ConsoleRenderer(colors)
+        {
+            width = Console.WindowWidth,
+            height = Console.WindowHeight,
+            bgColor = ConsoleColor.Black
+        };
+
+        SnakeGameLogic gameLogic = new SnakeGameLogic(renderer);
         ConsoleInput input = new ConsoleInput();
         gameLogic.InitializeInput(input);
 
@@ -17,12 +27,11 @@ public class Program
             DateTime frameStartTime = DateTime.Now;
             float deltaTime = (float)(frameStartTime - lastFrameTime).TotalSeconds;
 
-            input.Update(); // Обработка ввода от пользователя
-            gameLogic.Update(deltaTime); // Обновление состояния игры
+            input.Update();
+            gameLogic.Update(deltaTime);
 
             lastFrameTime = frameStartTime;
-
-            Thread.Sleep(10); // Ждем немного перед следующим циклом
+            Thread.Sleep(100); // задает скорость, с которой вызываются обновления
         }
     }
 }
