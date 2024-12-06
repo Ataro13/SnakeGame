@@ -2,47 +2,50 @@
 using System;
 using System.Collections.Generic;
 
-public interface IArrowListener
+namespace SnakeGame
 {
-    void OnArrowUp();
-    void OnArrowDown();
-    void OnArrowLeft();
-    void OnArrowRight();
-}
-
-public class ConsoleInput
-{
-    private List<IArrowListener> arrowListeners = new List<IArrowListener>();
-
-    public void Subscribe(IArrowListener listener)
+    public interface IArrowListener
     {
-        arrowListeners.Add(listener);
+        void OnArrowUp();
+        void OnArrowDown();
+        void OnArrowLeft();
+        void OnArrowRight();
     }
 
-    public void Update()
+    public class ConsoleInput
     {
-        var key = Console.ReadKey(intercept: true).Key;
+        private List<IArrowListener> arrowListeners = new List<IArrowListener>();
 
-        foreach (var listener in arrowListeners)
+        public void Subscribe(IArrowListener listener)
         {
-            switch (key)
+            arrowListeners.Add(listener);
+        }
+
+        public void Update()
+        {
+            var key = Console.ReadKey(intercept: true).Key;
+
+            foreach (var listener in arrowListeners)
             {
-                case ConsoleKey.W:
-                case ConsoleKey.UpArrow:
-                    listener.OnArrowUp();
-                    break;
-                case ConsoleKey.S:
-                case ConsoleKey.DownArrow:
-                    listener.OnArrowDown();
-                    break;
-                case ConsoleKey.A:
-                case ConsoleKey.LeftArrow:
-                    listener.OnArrowLeft();
-                    break;
-                case ConsoleKey.D:
-                case ConsoleKey.RightArrow:
-                    listener.OnArrowRight();
-                    break;
+                switch (key)
+                {
+                    case ConsoleKey.W:
+                    case ConsoleKey.UpArrow:
+                        listener.OnArrowUp();
+                        break;
+                    case ConsoleKey.S:
+                    case ConsoleKey.DownArrow:
+                        listener.OnArrowDown();
+                        break;
+                    case ConsoleKey.A:
+                    case ConsoleKey.LeftArrow:
+                        listener.OnArrowLeft();
+                        break;
+                    case ConsoleKey.D:
+                    case ConsoleKey.RightArrow:
+                        listener.OnArrowRight();
+                        break;
+                }
             }
         }
     }

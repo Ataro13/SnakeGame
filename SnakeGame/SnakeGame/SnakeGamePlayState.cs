@@ -1,69 +1,73 @@
-﻿using System;
-using System.Collections.Generic;
-
-public class SnakeGameplayState : BaseGameState
+﻿
+namespace SnakeGame
 {
-    public struct Cell
+    public class SnakeGameplayState : BaseGameState
     {
-        public int X, Y;
-        public Cell(int x, int y) => (X, Y) = (x, y);
-    }
-
-    public enum SnakeDir { Up, Down, Left, Right }
-
-    private List<Cell> Body = new List<Cell>();
-    private SnakeDir currentDir = SnakeDir.Right;
-    private float timeSinceLastMove = 0f;
-    private const float moveInterval = 0.2f; // Интервал времени для перемещения (200 мс)
-
-    public override void Reset()
-    {
-        Body.Clear();
-        currentDir = SnakeDir.Right;
-        Body.Add(new Cell(0, 0));
-        timeSinceLastMove = 0f;
-    }
-
-    public void SetDirection(SnakeDir direction)
-    {
-        currentDir = direction;
-    }
-
-    private Cell ShiftTo(Cell head)
-    {
-        Cell nextCell = head;
-        switch (currentDir)
+        public struct Cell
         {
-            case SnakeDir.Up:
-                nextCell.Y -= 1;
-                break;
-            case SnakeDir.Down:
-                nextCell.Y += 1;
-                break;
-            case SnakeDir.Left:
-                nextCell.X -= 1;
-                break;
-            case SnakeDir.Right:
-                nextCell.X += 1;
-                break;
+            public int X, Y;
+            public Cell(int x, int y) => (X, Y) = (x, y);
         }
-        return nextCell;
-    }
 
-    public override void Update(float deltaTime)
-    {
-        timeSinceLastMove += deltaTime;
+        public enum SnakeDir { Up, Down, Left, Right }
 
-        // Обновляем положение, когда прошло нужное кол-во времени
-        if (timeSinceLastMove >= moveInterval)
+        public List<Cell> Body { get; private set; } = new List<Cell>();
+        private SnakeDir currentDir = SnakeDir.Right;
+        private float timeSinceLastMove = 0f;
+        private const float moveInterval = 0.2f; // Интервал времени для перемещения (200 мс)
+
+        public override void Reset()
         {
+            Body.Clear();
+            currentDir = SnakeDir.Right; // По умолчанию, идёт вправо
+            Body.Add(new Cell(0, 0));
             timeSinceLastMove = 0f;
-            Cell head = Body[0];
-            Cell nextCell = ShiftTo(head);
-            Body.RemoveAt(Body.Count - 1);
-            Body.Insert(0, nextCell);
+        }
 
-            Console.WriteLine($"Head Position: X = {Body[0].X}, Y = {Body[0].Y}");
+        public void SetDirection(SnakeDir direction)
+        {
+            if ((direction == SnakeDir.Up && currentDir != SnakeDir.Down) ||
+                (direction == SnakeDir.Down && currentDir != SnakeDir.Up) ||
+                (direction == SnakeDir.Left && currentDir != SnakeDir.Right) ||
+                (direction == SnakeDir.Right && currentDir != SnakeDir.Left))
+            {
+                currentDir = direction;
+            }
+        }
+
+        private Cell ShiftTo(Cell head)
+        {
+            Cell nextCell = head;
+            switch (currentDir)
+            {
+                case SnakeDir.Up:
+                    nextCell.Y -= 1;
+                    break;
+                case SnakeDir.Down:
+                    nextCell.Y += 1;
+                    break;
+                case SnakeDir.Left:
+                    nextCell.X -= 1;
+                    break;
+                case SnakeDir.Right:
+                    nextCell.X += 1;
+                    break;
+            }
+            return nextCell;
+        }
+
+        public override void Update(float deltaTime)
+        {
+            timeSinceLastMove += deltaTime;
+
+            if (timeSinceLastMove >= moveInterval)
+            {
+                timeSinceLastMove = 0f;
+                Cell head = Body[0];
+                Cell nextCell = ShiftTo(head);
+                Body.Insert(0, nextCell);
+                Body.RemoveAt(Body.Count - 1);
+            }
         }
     }
 }
