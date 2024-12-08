@@ -1,11 +1,10 @@
-﻿
-using System;
+﻿using System;
 
 namespace SnakeGame
 {
     public class ConsoleRenderer
     {
-        public int width { get;  set; }
+        public int width { get; set; }
         public int height { get; set; }
 
         private const int MaxColors = 8;
@@ -34,8 +33,8 @@ namespace SnakeGame
 
             _colors = colors;
 
-            _maxWidth = 80; // фиксируем ширину
-            _maxHeight = 25; // фиксируем высоту
+            _maxWidth = 80; 
+            _maxHeight = 25; 
 
             _pixels = new char[_maxWidth, _maxHeight];
             _pixelColors = new byte[_maxWidth, _maxHeight];

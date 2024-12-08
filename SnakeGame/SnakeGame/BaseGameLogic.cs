@@ -1,5 +1,4 @@
-﻿
-namespace SnakeGame
+﻿namespace SnakeGame
 {
     public abstract class BaseGameLogic : IArrowListener
     {

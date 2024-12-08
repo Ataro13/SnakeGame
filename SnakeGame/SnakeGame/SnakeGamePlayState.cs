@@ -1,4 +1,5 @@
-﻿
+﻿using System.Collections.Generic;
+
 namespace SnakeGame
 {
     public class SnakeGameplayState : BaseGameState
@@ -11,21 +12,14 @@ namespace SnakeGame
 
         public enum SnakeDir { Up, Down, Left, Right }
 
-        public List<Cell> Body { get; private set; } = new List<Cell>();
-        private SnakeDir currentDir = SnakeDir.Right;
         private float timeSinceLastMove = 0f;
-        private const float moveInterval = 0.2f; // Интервал времени для перемещения (200 мс)
-
-        public override void Reset()
-        {
-            Body.Clear();
-            currentDir = SnakeDir.Right; // По умолчанию, идёт вправо
-            Body.Add(new Cell(0, 0));
-            timeSinceLastMove = 0f;
-        }
+        private const float moveInterval = 0.2f;
+        public List<Cell> Body { get; private set; } = new List<Cell> { new Cell(0, 0) };
+        private SnakeDir currentDir = SnakeDir.Right;
 
         public void SetDirection(SnakeDir direction)
         {
+            // Предотвращаем изменение на противоположное направление
             if ((direction == SnakeDir.Up && currentDir != SnakeDir.Down) ||
                 (direction == SnakeDir.Down && currentDir != SnakeDir.Up) ||
                 (direction == SnakeDir.Left && currentDir != SnakeDir.Right) ||
@@ -37,23 +31,22 @@ namespace SnakeGame
 
         private Cell ShiftTo(Cell head)
         {
-            Cell nextCell = head;
             switch (currentDir)
             {
                 case SnakeDir.Up:
-                    nextCell.Y -= 1;
+                    head.Y -= 1;
                     break;
                 case SnakeDir.Down:
-                    nextCell.Y += 1;
+                    head.Y += 1;
                     break;
                 case SnakeDir.Left:
-                    nextCell.X -= 1;
+                    head.X -= 1;
                     break;
                 case SnakeDir.Right:
-                    nextCell.X += 1;
+                    head.X += 1;
                     break;
             }
-            return nextCell;
+            return head;
         }
 
         public override void Update(float deltaTime)
@@ -66,8 +59,16 @@ namespace SnakeGame
                 Cell head = Body[0];
                 Cell nextCell = ShiftTo(head);
                 Body.Insert(0, nextCell);
-                Body.RemoveAt(Body.Count - 1);
+                Body.RemoveAt(Body.Count - 1); 
             }
+        }
+
+        public override void Reset()
+        {
+            Body.Clear();
+            Body.Add(new Cell(0, 0));
+            currentDir = SnakeDir.Right;
+            timeSinceLastMove = 0f;
         }
     }
 }
