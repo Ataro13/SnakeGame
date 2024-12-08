@@ -1,5 +1,5 @@
-﻿// SnakeGameLogic.cs
-using SnakeGame;
+﻿using SnakeGame;
+using System.Collections.Generic;
 
 namespace SnakeGame
 {

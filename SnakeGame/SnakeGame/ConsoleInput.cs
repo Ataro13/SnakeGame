@@ -1,5 +1,4 @@
-﻿
-using System;
+﻿using System;
 using System.Collections.Generic;
 
 namespace SnakeGame
@@ -23,28 +22,31 @@ namespace SnakeGame
 
         public void Update()
         {
-            var key = Console.ReadKey(intercept: true).Key;
-
-            foreach (var listener in arrowListeners)
+            if (Console.KeyAvailable)
             {
-                switch (key)
+                var key = Console.ReadKey(intercept: true).Key;
+
+                foreach (var listener in arrowListeners)
                 {
-                    case ConsoleKey.W:
-                    case ConsoleKey.UpArrow:
-                        listener.OnArrowUp();
-                        break;
-                    case ConsoleKey.S:
-                    case ConsoleKey.DownArrow:
-                        listener.OnArrowDown();
-                        break;
-                    case ConsoleKey.A:
-                    case ConsoleKey.LeftArrow:
-                        listener.OnArrowLeft();
-                        break;
-                    case ConsoleKey.D:
-                    case ConsoleKey.RightArrow:
-                        listener.OnArrowRight();
-                        break;
+                    switch (key)
+                    {
+                        case ConsoleKey.W:
+                        case ConsoleKey.UpArrow:
+                            listener.OnArrowUp();
+                            break;
+                        case ConsoleKey.S:
+                        case ConsoleKey.DownArrow:
+                            listener.OnArrowDown();
+                            break;
+                        case ConsoleKey.A:
+                        case ConsoleKey.LeftArrow:
+                            listener.OnArrowLeft();
+                            break;
+                        case ConsoleKey.D:
+                        case ConsoleKey.RightArrow:
+                            listener.OnArrowRight();
+                            break;
+                    }
                 }
             }
         }
