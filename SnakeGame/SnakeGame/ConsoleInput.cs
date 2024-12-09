@@ -1,52 +1,45 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace SnakeGame
+﻿namespace SnakeGame
 {
-    public interface IArrowListener
-    {
-        void OnArrowUp();
-        void OnArrowDown();
-        void OnArrowLeft();
-        void OnArrowRight();
-    }
+    using System;
+    using System.Collections.Generic;
 
     public class ConsoleInput
     {
-        private List<IArrowListener> arrowListeners = new List<IArrowListener>();
-
-        public void Subscribe(IArrowListener listener)
+        public interface IArrowListener
         {
-            arrowListeners.Add(listener);
+            void OnArrowUp();
+            void OnArrowDown();
+            void OnArrowLeft();
+            void OnArrowRight();
+        }
+
+        private readonly HashSet<IArrowListener> arrowListeners = new();
+
+        public void Subscribe(IArrowListener l)
+        {
+            arrowListeners.Add(l);
         }
 
         public void Update()
         {
-            if (Console.KeyAvailable)
+            while (Console.KeyAvailable)
             {
-                var key = Console.ReadKey(intercept: true).Key;
+                var key = Console.ReadKey(intercept: true);
 
-                foreach (var listener in arrowListeners)
+                switch (key.Key)
                 {
-                    switch (key)
-                    {
-                        case ConsoleKey.W:
-                        case ConsoleKey.UpArrow:
-                            listener.OnArrowUp();
-                            break;
-                        case ConsoleKey.S:
-                        case ConsoleKey.DownArrow:
-                            listener.OnArrowDown();
-                            break;
-                        case ConsoleKey.A:
-                        case ConsoleKey.LeftArrow:
-                            listener.OnArrowLeft();
-                            break;
-                        case ConsoleKey.D:
-                        case ConsoleKey.RightArrow:
-                            listener.OnArrowRight();
-                            break;
-                    }
+                    case ConsoleKey.UpArrow or ConsoleKey.W:
+                        foreach (var l in arrowListeners) l.OnArrowUp();
+                        break;
+                    case ConsoleKey.DownArrow or ConsoleKey.S:
+                        foreach (var l in arrowListeners) l.OnArrowDown();
+                        break;
+                    case ConsoleKey.LeftArrow or ConsoleKey.A:
+                        foreach (var l in arrowListeners) l.OnArrowLeft();
+                        break;
+                    case ConsoleKey.RightArrow or ConsoleKey.D:
+                        foreach (var l in arrowListeners) l.OnArrowRight();
+                        break;
                 }
             }
         }

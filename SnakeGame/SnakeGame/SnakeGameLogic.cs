@@ -1,35 +1,94 @@
-﻿using SnakeGame;
-using System.Collections.Generic;
-
-namespace SnakeGame
+﻿namespace SnakeGame
 {
-    public class SnakeGameLogic : BaseGameLogic
-    {
-        private SnakeGameplayState gameplayState = new SnakeGameplayState();
-        private ConsoleRenderer renderer;
-        private readonly char snakeChar = '■';
+    using Shared;
 
-        public SnakeGameLogic(ConsoleRenderer renderer)
+    internal class SnakeGameLogic : BaseGameLogic
+    {
+        private SnakeGamePlayState gameplayState = new();
+        private bool newGamePending = false;
+        private int currLevel = 0;
+        private ShowTextState showTextState = new(2f);
+
+        public void GotoGameplay()
         {
-            this.renderer = renderer;
+            gameplayState.level = currLevel;
+            gameplayState.fieldWidth = screenWidth;
+            gameplayState.fieldHeight = screenHeight;
+            ChangeState(gameplayState);
+            gameplayState.Reset();
+        }
+
+        private void GotoGameOver()
+        {
+            currLevel = 0;
+            newGamePending = true;
+            showTextState.text = "Game Over!";
+            ChangeState(showTextState);
+        }
+
+        private void GotoNextLevel()
+        {
+            currLevel++;
+            newGamePending = false;
+            showTextState.text = $"Level {currLevel}";
+            ChangeState(showTextState);
+        }
+
+        public override void OnArrowUp()
+        {
+            if (currentState != gameplayState) return;
+            gameplayState.SetDirection(SnakeDir.Up);
+        }
+
+        public override void OnArrowDown()
+        {
+            if (currentState != gameplayState) return;
+            gameplayState.SetDirection(SnakeDir.Down);
+        }
+
+        public override void OnArrowLeft()
+        {
+            if (currentState != gameplayState) return;
+            gameplayState.SetDirection(SnakeDir.Left);
+        }
+
+        public override void OnArrowRight()
+        {
+            if (currentState != gameplayState) return;
+            gameplayState.SetDirection(SnakeDir.Right);
         }
 
         public override void Update(float deltaTime)
         {
-            gameplayState.Update(deltaTime);
-            renderer.Clear();
-
-            // Отрисовка головы змейки
-            var head = gameplayState.Body[0];
-            renderer.SetPixel(head.X, head.Y, snakeChar, 1); // Используем индекс цвета 1 для змейки
-            renderer.Render();
+            if (currentState != null && !currentState.IsDone())
+                return;
+            if (currentState == null || currentState == gameplayState && !gameplayState.gameOver)
+            {
+                GotoNextLevel();
+            }
+            else if (currentState == gameplayState && gameplayState.gameOver)
+            {
+                GotoGameOver();
+            }
+            else if (currentState != gameplayState && newGamePending)
+            {
+                GotoNextLevel();
+            }
+            else if (currentState != gameplayState && !newGamePending)
+            {
+                GotoGameplay();
+            }
         }
 
-        public override void OnArrowUp() => gameplayState.SetDirection(SnakeGameplayState.SnakeDir.Up);
-        public override void OnArrowDown() => gameplayState.SetDirection(SnakeGameplayState.SnakeDir.Down);
-        public override void OnArrowLeft() => gameplayState.SetDirection(SnakeGameplayState.SnakeDir.Left);
-        public override void OnArrowRight() => gameplayState.SetDirection(SnakeGameplayState.SnakeDir.Right);
-
-        public void GotoGameplay() => gameplayState.Reset();
+        public override ConsoleColor[] CreatePalette()
+        {
+            return new[]
+            {
+                ConsoleColor.Green,
+                ConsoleColor.Red,
+                ConsoleColor.White,
+                ConsoleColor.Blue,
+            };
+        }
     }
 }
